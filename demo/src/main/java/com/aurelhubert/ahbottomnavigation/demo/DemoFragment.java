@@ -71,68 +71,7 @@ public class DemoFragment extends Fragment {
 		final Spinner spinnerTitleState = view.findViewById(R.id.fragment_demo_title_state);
 		final SwitchCompat switchTranslucentNavigation = view.findViewById(R.id.fragment_demo_translucent_navigation);
 		
-		switchColored.setChecked(demoActivity.isBottomNavigationColored());
-		switchFiveItems.setChecked(demoActivity.getBottomNavigationNbItems() == 5);
-		switchTranslucentNavigation.setChecked(getActivity()
-				.getSharedPreferences("shared", Context.MODE_PRIVATE)
-				.getBoolean("translucentNavigation", false));
-		switchTranslucentNavigation.setVisibility(
-				Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? View.VISIBLE : View.GONE);
-		
-		switchTranslucentNavigation.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				getActivity()
-						.getSharedPreferences("shared", Context.MODE_PRIVATE)
-						.edit()
-						.putBoolean("translucentNavigation", isChecked)
-						.apply();
-				demoActivity.reload();
-			}
-		});
-		switchColored.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				demoActivity.updateBottomNavigationColor(isChecked);
-			}
-		});
-		switchFiveItems.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				demoActivity.updateBottomNavigationItems(isChecked);
-			}
-		});
-		showHideBottomNavigation.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				demoActivity.showOrHideBottomNavigation(isChecked);
-			}
-		});
-		showSelectedBackground.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-				demoActivity.updateSelectedBackgroundVisibility(isChecked);
-			}
-		});
-		final List<String> titleStates = new ArrayList<>();
-		for (AHBottomNavigation.TitleState titleState : AHBottomNavigation.TitleState.values()) {
-			titleStates.add(titleState.toString());
-		}
-		ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, titleStates);
-		spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		spinnerTitleState.setAdapter(spinnerAdapter);
-		spinnerTitleState.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				AHBottomNavigation.TitleState titleState = AHBottomNavigation.TitleState.valueOf(titleStates.get(position));
-				demoActivity.setTitleState(titleState);
-			}
-			
-			@Override
-			public void onNothingSelected(AdapterView<?> parent) {
-				// do nothing
-			}
-		});
+
 	}
 	
 	/**

@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
@@ -40,6 +41,7 @@ import android.widget.TextView;
 
 import com.aurelhubert.ahbottomnavigation.notification.AHNotification;
 import com.aurelhubert.ahbottomnavigation.notification.AHNotificationHelper;
+import com.google.android.material.internal.EdgeToEdgeUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -264,12 +266,11 @@ public class AHBottomNavigation extends FrameLayout {
 
 		views.clear();
 		backgroundColorView = new View(context);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			LayoutParams backgroundLayoutParams = new LayoutParams(
 					ViewGroup.LayoutParams.MATCH_PARENT, calculateHeight(layoutHeight));
 			addView(backgroundColorView, backgroundLayoutParams);
 			bottomNavigationHeight = layoutHeight;
-		}
+
 
 		linearLayoutContainer = new LinearLayout(context);
 		linearLayoutContainer.setOrientation(LinearLayout.HORIZONTAL);
@@ -293,26 +294,27 @@ public class AHBottomNavigation extends FrameLayout {
 		});
 	}
 
-	@SuppressLint("NewApi")
-	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-	private int calculateHeight(int layoutHeight) {
-		if(!translucentNavigationEnabled) return layoutHeight;
+	@Override
+	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+		super.onLayout(changed, left, top, right, bottom);
+	}
 
+	@SuppressLint({"NewApi", "DiscouragedApi","ResourceType","InternalInsetResource"})
+	private int calculateHeight(int layoutHeight) {
+		if(!translucentNavigationEnabled) {return layoutHeight;}
 		int resourceId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
 		if (resourceId > 0) {
 			navigationBarHeight = resources.getDimensionPixelSize(resourceId);
 		}
 
-		int[] attrs = {android.R.attr.fitsSystemWindows, android.R.attr.windowTranslucentNavigation};
+		int[] attrs = {android.R.attr.windowTranslucentNavigation};
 		TypedArray typedValue = getContext().getTheme().obtainStyledAttributes(attrs);
 
-		@SuppressWarnings("ResourceType")
-		boolean fitWindow = typedValue.getBoolean(0, false);
 
 		@SuppressWarnings("ResourceType")
-		boolean translucentNavigation = typedValue.getBoolean(1, true);
+		boolean translucentNavigation = typedValue.getBoolean(0, true);
 
-		if(hasImmersive() /*&& !fitWindow*/ && translucentNavigation) {
+		if(translucentNavigation) {
 			layoutHeight += navigationBarHeight;
 		}
 
@@ -322,8 +324,8 @@ public class AHBottomNavigation extends FrameLayout {
 	}
 
 	@SuppressLint("NewApi")
-	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	public boolean hasImmersive() {
+
 		Display d = ((WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 
 		DisplayMetrics realDisplayMetrics = new DisplayMetrics();
@@ -1313,11 +1315,11 @@ public class AHBottomNavigation extends FrameLayout {
 			hideBottomNavigationWithAnimation = withAnimation;
 		} else {
 			// Hide bottom navigation
-			ViewCompat.animate(this)
-					.translationY(bottomNavigationHeight)
-					.setInterpolator(new LinearOutSlowInInterpolator())
-					.setDuration(withAnimation ? 300 : 0)
-					.start();
+
+			animate().translationY(bottomNavigationHeight)
+			.setInterpolator(new LinearOutSlowInInterpolator())
+			.setDuration(withAnimation ? 300 : 0)
+			.start();
 		}
 	}
 
