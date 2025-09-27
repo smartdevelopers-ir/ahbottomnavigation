@@ -1,8 +1,12 @@
-apply plugin: 'com.android.library'
-apply plugin: 'maven-publish'
+plugins {
+    id 'com.android.library'
+    id 'maven-publish'
+    id 'signing'
+}
+
 
 ext {
-    bintrayRepo = 'maven'
+
     bintrayName = 'ah-bottom-navigation'
 
     publishedGroupId = 'com.aurelhubert'
@@ -40,17 +44,75 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-	compileOptions {
+    compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
     namespace 'com.aurelhubert.ahbottomnavigation'
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+        }
+    }
 }
 
 dependencies {
     implementation 'com.google.android.material:material:1.13.0'
 }
+version = ext.libraryVersion
+group = ext.publishedGroupId
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
 
+                from components.release
+
+                groupId = publishedGroupId
+                artifactId = artifact
+
+                pom {
+                    name = bintrayName
+                    description = libraryDescription
+                    url = siteUrl
+
+                    licenses {
+                        license {
+                            name = licenseName
+                            url = licenseUrl
+
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = developerId
+                            name = developerName
+                            email = developerEmail
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:git://github.com/aurelhubert/ahbottomnavigation.git'
+                        developerConnection = 'scm:git:ssh://github.com/aurelhubert/ahbottomnavigation.git'
+                        url = gitUrl
+                    }
+
+                }
+            }
+        }
+        repositories {
+            maven {
+                // change URLs to point to your repos, e.g. http://my.org/repo
+                def releasesRepoUrl = "${layout.buildDirectory.asFile.get()}/repos/releases"
+                def snapshotsRepoUrl = "${layout.buildDirectory.asFile.get()}/repos/snapshots"
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            }
+        }
+    }
+}
+
+signing {
+    sign configurations.archives
+}
 // Place it at the end of the file
 //if (project.rootProject.file('local.properties').exists()) {
 //    apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
