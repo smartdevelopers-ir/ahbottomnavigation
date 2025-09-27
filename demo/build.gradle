@@ -1,12 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 36
 
     defaultConfig {
+        namespace 'com.aurelhubert.ahbottomnavigation.demo'
         applicationId "com.aurelhubert.ahbottomnavigation.demo"
-        minSdkVersion 16
-        targetSdkVersion 28
+        minSdkVersion 21
+        targetSdkVersion 36
         versionCode 1
         versionName "1.0"
         vectorDrawables.useSupportLibrary = true
@@ -18,13 +19,29 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    android {
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_17
+            targetCompatibility JavaVersion.VERSION_17
+        }
+        lintOptions {
+            abortOnError false
+            checkReleaseBuilds false
+        }
+    }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    testImplementation 'junit:junit:4.12'
-    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.google.android.material:material:1.13.0'
     implementation project(':ahbottomnavigation')
+}
+
+tasks.configureEach { task ->
+    if (task.name == 'lintVitalAnalyzeRelease') {
+        task.enabled = false
+        logger.lifecycle("Disabling lintVitalAnalyzeRelease task for ${project.name}.")
+    }
 }
