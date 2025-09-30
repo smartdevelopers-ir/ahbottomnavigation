@@ -9,7 +9,13 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import androidx.annotation.ColorInt;
+import androidx.core.graphics.Insets;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
+
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.View;
@@ -212,7 +218,7 @@ public class AHHelper {
 	 * @param context Context
 	 * @return
 	 */
-	public static boolean isTranslucentStatusBar(Context context) {
+	public static boolean isTranslucentNavigation(Context context) {
 		Window w = unwrap(context).getWindow();
 		WindowManager.LayoutParams lp = w.getAttributes();
 		int flags = lp.flags;
@@ -229,18 +235,12 @@ public class AHHelper {
 	 * @param context Context
 	 * @return
 	 */
-	public static int getSoftButtonsBarSizePort(Context context) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-			DisplayMetrics metrics = new DisplayMetrics();
-			Window window = unwrap(context).getWindow();
-			window.getWindowManager().getDefaultDisplay().getMetrics(metrics);
-			int usableHeight = metrics.heightPixels;
-			window.getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
-			int realHeight = metrics.heightPixels;
-			if (realHeight > usableHeight)
-				return realHeight - usableHeight;
-			else
-				return 0;
+	public static int getNavigationBarSize(Context context) {
+		Window window = unwrap(context).getWindow();
+		WindowInsetsCompat insetsCompat = ViewCompat.getRootWindowInsets(window.getDecorView());
+		if (insetsCompat != null){
+			Insets insets = insetsCompat.getInsets(WindowInsetsCompat.Type.navigationBars());
+			return insets.bottom;
 		}
 		return 0;
 	}

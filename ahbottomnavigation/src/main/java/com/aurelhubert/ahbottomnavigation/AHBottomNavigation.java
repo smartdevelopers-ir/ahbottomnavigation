@@ -302,23 +302,21 @@ public class AHBottomNavigation extends FrameLayout {
 	@SuppressLint({"NewApi", "DiscouragedApi","ResourceType","InternalInsetResource"})
 	private int calculateHeight(int layoutHeight) {
 		if(!translucentNavigationEnabled) {return layoutHeight;}
-		int resourceId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
-		if (resourceId > 0) {
-			navigationBarHeight = resources.getDimensionPixelSize(resourceId);
-		}
+//		int resourceId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+//		if (resourceId > 0) {
+//			navigationBarHeight = resources.getDimensionPixelSize(resourceId);
+//		}
 
-		int[] attrs = {android.R.attr.windowTranslucentNavigation};
-		TypedArray typedValue = getContext().getTheme().obtainStyledAttributes(attrs);
+		navigationBarHeight = AHHelper.getNavigationBarSize(getContext());
+
 
 
 		@SuppressWarnings("ResourceType")
-		boolean translucentNavigation = typedValue.getBoolean(0, true);
+		boolean translucentNavigation = AHHelper.isTranslucentNavigation(getContext());
 
 		if(translucentNavigation) {
 			layoutHeight += navigationBarHeight;
 		}
-
-		typedValue.recycle();
 
 		return layoutHeight;
 	}
