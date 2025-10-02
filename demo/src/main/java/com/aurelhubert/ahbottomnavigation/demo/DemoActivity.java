@@ -12,6 +12,9 @@ import com.google.android.material.snackbar.Snackbar;
 
 import androidx.activity.EdgeToEdge;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -52,13 +55,18 @@ public class DemoActivity extends AppCompatActivity {
 		setTheme(R.style.AppTheme_TranslucentNavigation );
 		setContentView(R.layout.activity_home);
 		AHBottomNavigation navigation = findViewById(R.id.bottom_navigation);
-		navigation.setTranslucentNavigationEnabled(true);
+//		navigation.setTranslucentNavigationEnabled(true);
 		navigation.setColored(true);
 		navigation.setDefaultBackgroundColor(Color.GREEN);
 		AHBottomNavigationItem item1 = new AHBottomNavigationItem("home",getDrawable(R.drawable.ic_maps_local_bar),Color.GREEN);
 		AHBottomNavigationItem item2 = new AHBottomNavigationItem("home2",getDrawable(R.drawable.ic_content_add),Color.RED);
 		AHBottomNavigationItem item3 = new AHBottomNavigationItem("home3",getDrawable(R.drawable.ic_maps_place),Color.BLUE);
 		navigation.addItems(Arrays.asList(item1,item2,item3));
+		ViewCompat.setOnApplyWindowInsetsListener(navigation,(v,insets)->{
+			Insets spaces = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+			v.setPadding(0,0,0,spaces.bottom);
+			return insets;
+		});
 	}
 
 	@Override

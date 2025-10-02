@@ -19,7 +19,9 @@ import androidx.annotation.DrawableRes;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -248,6 +250,13 @@ public class AHBottomNavigation extends FrameLayout {
 		ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
 				ViewGroup.LayoutParams.MATCH_PARENT, bottomNavigationHeight);
 		setLayoutParams(params);
+		ViewCompat.setOnApplyWindowInsetsListener(this,(v,insets)->{
+			if (translucentNavigationEnabled){
+				Insets spaces = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
+				setPadding(0,0,0,spaces.bottom);
+			}
+			return insets;
+		});
 	}
 
 	/**
@@ -265,9 +274,12 @@ public class AHBottomNavigation extends FrameLayout {
 		removeAllViews();
 
 		views.clear();
-		backgroundColorView = new View(context);
+//		layoutHeight = calculateHeight(layoutHeight);
+		if (backgroundColorView == null){
+			backgroundColorView = new View(context);
+		}
 			LayoutParams backgroundLayoutParams = new LayoutParams(
-					ViewGroup.LayoutParams.MATCH_PARENT, calculateHeight(layoutHeight));
+					ViewGroup.LayoutParams.MATCH_PARENT, (layoutHeight+backgroundColorView.getPaddingBottom()+backgroundColorView.getPaddingTop()));
 			addView(backgroundColorView, backgroundLayoutParams);
 			bottomNavigationHeight = layoutHeight;
 
@@ -299,27 +311,29 @@ public class AHBottomNavigation extends FrameLayout {
 		super.onLayout(changed, left, top, right, bottom);
 	}
 
-	@SuppressLint({"NewApi", "DiscouragedApi","ResourceType","InternalInsetResource"})
-	private int calculateHeight(int layoutHeight) {
-		if(!translucentNavigationEnabled) {return layoutHeight;}
-//		int resourceId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
-//		if (resourceId > 0) {
-//			navigationBarHeight = resources.getDimensionPixelSize(resourceId);
+//	@SuppressLint({"NewApi", "DiscouragedApi","ResourceType","InternalInsetResource"})
+//	private int calculateHeight(int layoutHeight) {
+//		if(!translucentNavigationEnabled) {return layoutHeight;}
+////		int resourceId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+////		if (resourceId > 0) {
+////			navigationBarHeight = resources.getDimensionPixelSize(resourceId);
+////		}
+//
+//		navigationBarHeight = AHHelper.getNavigationBarSize(getContext());
+//
+
+//
+//
+//		@SuppressWarnings("ResourceType")
+//		boolean translucentNavigation = AHHelper.isTranslucentNavigation(getContext());
+//
+//		if(translucentNavigation) {
+//			layoutHeight += navigationBarHeight;
 //		}
-
-		navigationBarHeight = AHHelper.getNavigationBarSize(getContext());
-
-
-
-		@SuppressWarnings("ResourceType")
-		boolean translucentNavigation = AHHelper.isTranslucentNavigation(getContext());
-
-		if(translucentNavigation) {
-			layoutHeight += navigationBarHeight;
-		}
-
-		return layoutHeight;
-	}
+//
+//
+//		return layoutHeight;
+//	}
 
 	@SuppressLint("NewApi")
 	public boolean hasImmersive() {
@@ -353,6 +367,13 @@ public class AHBottomNavigation extends FrameLayout {
 				titleState != TitleState.SHOW_WHEN_ACTIVE_FORCE &&
 				(items.size() == MIN_ITEMS || titleState == TitleState.ALWAYS_SHOW);
     }
+
+	@Override
+	public void setPadding(int left, int top, int right, int bottom) {
+		if (backgroundColorView != null){
+			backgroundColorView.setPadding(left, top, right, bottom);
+		}
+	}
 
 	/**
 	 * Create classic items (only 3 items in the bottom navigation)
